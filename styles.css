@@ -590,3 +590,69 @@ body.premium-active .premium-particles { display: block; }
 .topic-section-title { font-size: 0.92rem; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
 .topic-section-title .num { background: var(--grad-purple); color: #fff; border-radius: 8px; padding: 2px 8px; font-size: 0.7rem; font-weight: 800; }
 .topic-formula { background: var(--card-bg-2); border-left: 3px solid var(--purple); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; font-family: monospace; font-weight: 700; color: var(--accent); font-size: 0.95rem; }
+
+/* ---------- Дополнительные темы магазина ---------- */
+
+body.theme-fire {
+  --bg: #1A0A0A;
+  --sidebar-bg: #1F0E0E;
+  --card-bg: #2A1212;
+  --card-bg-2: #331818;
+  --topbar-bg: #1F0E0E;
+  --primary: #F97316;
+  --accent: #FBBF24;
+  --purple: #EF4444;
+  --border: #4A1F1F;
+  --border-soft: #3A1818;
+  --grad-blue: linear-gradient(135deg, #F97316, #EF4444);
+  --grad-purple: linear-gradient(135deg, #DC2626, #F97316);
+  --grad-card: linear-gradient(135deg, #2A1212, #1A0A0A);
+}
+
+body.theme-forest {
+  --bg: #0A1A0F;
+  --sidebar-bg: #0E2014;
+  --card-bg: #122A1A;
+  --card-bg-2: #16331F;
+  --topbar-bg: #0E2014;
+  --primary: #22C55E;
+  --accent: #4ADE80;
+  --purple: #10B981;
+  --border: #1E4028;
+  --border-soft: #183522;
+  --grad-blue: linear-gradient(135deg, #22C55E, #16A34A);
+  --grad-purple: linear-gradient(135deg, #16A34A, #10B981);
+  --grad-card: linear-gradient(135deg, #122A1A, #0A1A0F);
+}
+
+body.theme-gold {
+  --bg: #1A1408;
+  --sidebar-bg: #1F1A0A;
+  --card-bg: #2A2210;
+  --card-bg-2: #332A15;
+  --topbar-bg: #1F1A0A;
+  --primary: #FBBF24;
+  --accent: #FCD34D;
+  --purple: #F59E0B;
+  --border: #4A3A15;
+  --border-soft: #3A2E12;
+  --grad-blue: linear-gradient(135deg, #FBBF24, #F59E0B);
+  --grad-purple: linear-gradient(135deg, #F59E0B, #FBBF24);
+  --grad-card: linear-gradient(135deg, #2A2210, #1A1408);
+}
+
+body.theme-cosmic {
+  --bg: #0F0A1F;
+  --sidebar-bg: #140E28;
+  --card-bg: #1A1230;
+  --card-bg-2: #20163A;
+  --topbar-bg: #140E28;
+  --primary: #8B5CF6;
+  --accent: #EC4899;
+  --purple: #A78BFA;
+  --border: #2E2050;
+  --border-soft: #261A44;
+  --grad-blue: linear-gradient(135deg, #8B5CF6, #EC4899);
+  --grad-purple: linear-gradient(135deg, #7C3AED, #EC4899);
+  --grad-card: linear-gradient(135deg, #1A1230, #0F0A1F);
+}
