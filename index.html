@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0A0E1A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Номи — помощник для учёбы</title>
+<link rel="stylesheet" href="styles.css">
+
+</head>
+  <body>
+<div id="loading-screen">
+  <div class="loading-avatar">
+    <svg viewBox="0 0 60 60">
+      <defs><linearGradient id="nomiGradLoad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient></defs>
+      <path d="M 16 17 Q 13 8 11 6 Q 15 9 19 14 Z" fill="url(#nomiGradLoad)"/>
+      <path d="M 44 17 Q 47 8 49 6 Q 45 9 41 14 Z" fill="url(#nomiGradLoad)"/>
+      <ellipse cx="30" cy="32" rx="22" ry="20" fill="url(#nomiGradLoad)"/>
+      <ellipse cx="22" cy="28" rx="4.5" ry="5" fill="#fff"/>
+      <ellipse cx="38" cy="28" rx="4.5" ry="5" fill="#fff"/>
+      <ellipse cx="22" cy="28" rx="2.2" ry="2.8" fill="#0A0E1A"/>
+      <ellipse cx="38" cy="28" rx="2.2" ry="2.8" fill="#0A0E1A"/>
+      <path d="M 23 42 Q 30 47 37 42" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="loading-title">НОМИ</div>
+  <div class="loading-sub">Умный дракончик</div>
+  <div class="loading-dots"><span></span><span></span><span></span></div>
+</div>
+
+<div id="confetti-container"></div>
+<div class="premium-particles" id="premiumParticles"></div>
+
+<button id="fab" onclick="toggleFab(event)">+</button>
+<div id="fab-menu">
+  <button class="fab-action" onclick="closeFab(); openHwModal()"><span class="fab-icon">📝</span><span>Добавить ДЗ</span></button>
+  <button class="fab-action" onclick="closeFab(); showScreen('checklist')"><span class="fab-icon">✅</span><span>Задача</span></button>
+  <button class="fab-action" onclick="closeFab(); openReminderModal()"><span class="fab-icon">🔔</span><span>Напоминание</span></button>
+  <button class="fab-action" onclick="closeFab(); openLessonModal()"><span class="fab-icon">📅</span><span>Урок</span></button>
+  <button class="fab-action" onclick="closeFab(); openFlashCardModal()"><span class="fab-icon">🎴</span><span>Карточка</span></button>
+</div>
+
+<button id="nomi-chat-btn" onclick="toggleChat()">Номи</button>
+<div id="nomi-chat-panel">
+  <div class="nomi-chat-head">
+    <div style="width:40px;height:40px;">
+      <svg viewBox="0 0 60 60"><defs><linearGradient id="gc" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient></defs><path d="M 16 17 Q 13 8 11 6 Q 15 9 19 14 Z" fill="url(#gc)"/><path d="M 44 17 Q 47 8 49 6 Q 45 9 41 14 Z" fill="url(#gc)"/><ellipse cx="30" cy="32" rx="22" ry="20" fill="url(#gc)"/><ellipse cx="22" cy="28" rx="4.5" ry="5" fill="#fff"/><ellipse cx="38" cy="28" rx="4.5" ry="5" fill="#fff"/><ellipse cx="22" cy="28" rx="2.2" ry="2.8" fill="#0A0E1A"/><ellipse cx="38" cy="28" rx="2.2" ry="2.8" fill="#0A0E1A"/><path d="M 23 42 Q 30 47 37 42" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
+    </div>
+    <div style="flex:1;"><div class="nomi-chat-title">Номи</div><div class="nomi-chat-sub">Онлайн</div></div>
+    <button class="icon-btn" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="nomi-chat-body" id="nomiChatBody"></div>
+  <div class="chat-quick-replies">
+    <button onclick="quickReply('Что мне делать сегодня?')">Что делать?</button>
+    <button onclick="quickReply('Как мой прогресс?')">Прогресс</button>
+    <button onclick="quickReply('Мотивируй меня')">Мотивация</button>
+    <button onclick="quickReply('Расскажи шутку')">Шутка</button>
+    <button onclick="quickReply('Дай совет')">Совет</button>
+  </div>
+  <div class="chat-input-row">
+    <button class="icon-btn" onclick="toggleChatMic()">🎤</button>
+    <input type="text" id="nomiChatInput" placeholder="Спроси Номи..." maxlength="200" onkeydown="if(event.key==='Enter'){event.preventDefault();sendChat();}">
+    <button class="chat-send-btn" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
+<div id="onboarding">
+  <div class="onboard-step active" id="step-role">
+    <div class="onboard-title">Привет! Я — Номи 👋<br>Кто ты?</div>
+    <button class="btn" onclick="onboardNext('student')">🎓 Ученик</button>
+  </div>
+  <div class="onboard-step" id="step-name">
+    <div class="onboard-title">Как тебя зовут?</div>
+    <div class="form-group"><input type="text" id="inputName" placeholder="Например: Арсений" maxlength="30" autocomplete="off"></div>
+    <div class="onboard-nav">
+      <button class="btn btn-outline" onclick="onboardBack()">← Назад</button>
+      <button class="btn" id="btnNameNext">Далее →</button>
+    </div>
+  </div>
+  <div class="onboard-step" id="step-class">
+    <div class="onboard-title">В каком ты классе?</div>
+    <div class="class-grid" id="classGrid"></div>
+    <div class="onboard-nav">
+      <button class="btn btn-outline" onclick="onboardBack()">← Назад</button>
+      <button class="btn" id="btnClassFinish">Начать! 🚀</button>
+    </div>
+  </div>
+</div>
+
+<aside id="sidebar"><div class="logo">НОМИ</div><nav class="side-nav" id="sideNav"></nav></aside>
+<header id="topbar">
+  <div class="topbar-actions">
+    <div class="topbar-pill">🔥 <span id="topbarStreakValue">0</span></div>
+    <div class="topbar-pill">⭐ <span id="topbarXpValue">0</span> XP</div>
+    <div class="topbar-pill premium-pill" id="topbarPremium" onclick="showScreen('profile')" style="display:none;">💎 Premium</div>
+    <div class="topbar-user" onclick="showScreen('profile')">
+      <div class="avatar" id="topbarAvatar">Я</div>
+      <span class="name" id="topbarName">Ученик</span>
+      <span id="topbarTitle" style="font-size:0.72rem; color:var(--accent); margin-left:4px;"></span>
+    </div>
+  </div>
+</header>
+<nav id="bottom-nav"><div class="nav-inner" id="bottomNavInner"></div></nav>
+
+<main id="app-content">
+
+<section class="screen" id="home">
+  <div class="premium-banner" id="premiumBanner" onclick="openPremiumModal()">
+    <div style="font-size:2rem;">💎</div>
+    <div style="flex:1;"><strong style="color:var(--premium-gold);display:block;">Открой всю мощь Номи</strong><span style="font-size:0.78rem;color:var(--text-secondary);">Умный Номи, все темы, скидка −30%</span></div>
+    <button class="btn btn-gold btn-sm" onclick="event.stopPropagation();openPremiumModal()">Открыть</button>
+  </div>
+
+  <div class="card" id="chestCard" onclick="openDailyChest()" style="background:linear-gradient(135deg,rgba(251,191,36,0.2),rgba(249,115,22,0.15));border:2px solid var(--premium-gold);margin-bottom:14px;display:none;align-items:center;gap:14px;cursor:pointer;">
+    <div style="font-size:2.6rem;" id="chestIcon">🎁</div>
+    <div style="flex:1;"><div style="font-weight:800;color:var(--premium-gold);" id="chestTitle">Ежедневный сундук</div><div style="font-size:0.78rem;color:var(--text-secondary);" id="chestDesc">Открой и получи награду!</div></div>
+  </div>
+
+  <div class="card greeting-card" onclick="greetingClick()" style="margin-bottom:14px;display:flex;align-items:center;gap:14px;cursor:pointer;">
+    <div class="nomi-avatar" id="nomiAvatar" onclick="event.stopPropagation(); avatarClick()" style="position:relative;">
+      <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" id="nomiFaceSvg">
+        <defs><linearGradient id="nomiGradHome" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient></defs>
+        <g id="nomiHornsGroup"></g>
+        <ellipse cx="30" cy="32" rx="22" ry="20" fill="url(#nomiGradHome)"/>
+        <ellipse id="nomiEyeL" cx="22" cy="28" rx="4.5" ry="5" fill="#fff"/>
+        <ellipse id="nomiEyeR" cx="38" cy="28" rx="4.5" ry="5" fill="#fff"/>
+        <g id="nomiPupilsGroup"></g>
+        <g id="nomiNoseGroup"></g>
+        <path id="nomiMouth" d="M 23 42 Q 30 47 37 42" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span class="avatar-fire" id="avatarFire" style="display:none;">🔥</span>
+      <span class="avatar-crown" id="avatarCrownHome">👑</span>
+      <span class="avatar-hat-svg" id="avatarHatSvg"></span>
+      <div class="nomi-ring" id="nomiRing"></div>
+    </div>
+    <div style="flex:1;">
+      <div style="font-weight:800;font-size:1.05rem;" id="greetingText">Привет!</div>
+      <div style="font-size:0.82rem;color:var(--text-secondary);margin-top:3px;" id="greetingSub">Готов учиться?</div>
+    </div>
+    <div style="text-align:right;">
+      <div class="clock-value" id="clockTime">--:--</div>
+      <div style="font-size:0.7rem;color:var(--text-dim);margin-top:2px;font-weight:600;" id="clockDate">—</div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-value" id="homeXpValue">0</div><div class="stat-label">⭐ XP</div></div>
+    <div class="stat-card"><div class="stat-value" id="homeStreakValue">0</div><div class="stat-label">🔥 Дней</div></div>
+    <div class="stat-card pointer" onclick="openLevelInfo()"><div class="stat-value" id="homeLevelValue">1</div><div class="stat-label">🎖️ Уровень</div></div>
+    <div class="stat-card"><div class="stat-value" id="homeHwDoneValue">0</div><div class="stat-label">✅ ДЗ</div></div>
+  </div>
+
+  <div class="progress-card clickable" onclick="quickEditStudy()">
+    <div class="progress-card-header"><span>📚 УЧЕБА</span><span class="progress-card-percent" id="studyPercent">—</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="studyFill"></div></div>
+    <div class="progress-card-label" id="studyLabel">Нажми, чтобы настроить</div>
+  </div>
+  <div class="progress-card clickable" onclick="quickEditVacation()">
+    <div class="progress-card-header"><span>🏖️ КАНИКУЛЫ</span><span class="progress-card-percent" id="beforeVacationPercent">—</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="beforeVacationFill"></div></div>
+    <div class="progress-card-label" id="beforeVacationLabel">Нажми, чтобы настроить</div>
+  </div>
+  <div class="progress-card">
+    <div class="progress-card-header"><span id="levelProgressTitle">🎖️ До следующего уровня</span><span class="progress-card-percent" id="levelProgressPercent">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill gold" id="levelProgressFill"></div></div>
+    <div class="progress-card-label" id="levelProgressLabel">0 / 100 XP</div>
+  </div>
+
+  <div id="dailyCard"></div>
+
+  <div class="section-title mt-16">⚡ Быстрые действия</div>
+  <div class="stats-grid" id="quickActionsGrid" style="grid-template-columns:repeat(3,1fr);gap:8px;"></div>
+
+  <div class="card card-accent" style="margin-bottom:14px;cursor:pointer;" onclick="showScreen('motivation')">
+    <div style="font-size:0.75rem;font-weight:800;color:var(--accent);text-transform:uppercase;margin-bottom:8px;">💭 Цитата дня</div>
+    <div style="font-size:0.92rem;line-height:1.55;font-style:italic;" id="homeQuoteText">«Учись так, как будто тебе предстоит жить вечно»</div>
+    <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:8px;font-weight:600;" id="homeQuoteAuthor">— Конфуций</div>
+  </div>
+
+  <div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="showScreen('pet')">
+    <div style="font-size:2.5rem;">🐣</div>
+    <div style="flex:1;"><div style="font-weight:700;font-size:0.92rem;">Твой Номи</div><div style="font-size:0.75rem;color:var(--text-secondary);margin-top:2px;" id="homePetStatus">Сытый и довольный</div></div>
+    <div style="font-size:0.85rem;color:var(--purple);font-weight:700;">Ур. <span id="homePetLevel">1</span></div>
+  </div>
+</section>
+
+<section class="screen" id="classGroups">
+  <div class="section-title">📚 Темы по классам</div>
+  <div class="class-groups-grid" id="classGroupsGrid"></div>
+</section>
+
+<section class="screen" id="classSelect">
+  <button class="btn btn-ghost btn-sm mb-16" onclick="showScreen('classGroups')" style="width:auto;">← Назад</button>
+  <div class="section-title" id="classSelectTitle">Классы</div>
+  <div class="class-list-grid" id="classListGrid"></div>
+</section>
+
+<section class="screen" id="subjectSelect">
+  <button class="btn btn-ghost btn-sm mb-16" onclick="showScreen('classSelect')" style="width:auto;">← Назад</button>
+  <div class="section-title" id="subjectSelectTitle">Предметы</div>
+  <div class="subjects-grid" id="subjectsGrid"></div>
+</section>
+
+<section class="screen" id="topicList">
+  <button class="btn btn-ghost btn-sm mb-16" onclick="showScreen('subjectSelect')" style="width:auto;">← Назад</button>
+  <div class="section-title" id="topicListTitle">Темы</div>
+  <div class="topics-grid" id="topicListGrid"></div>
+</section>
+
+<section class="screen" id="topicDetail">
+  <button class="btn btn-ghost btn-sm mb-16" onclick="backFromTopic()" style="width:auto;">← Назад</button>
+  <div class="topic-detail-header">
+    <div class="topic-detail-title" id="topicDetailTitle">Тема</div>
+    <div class="topic-detail-subject" id="topicDetailSubject">Предмет</div>
+    <div class="topic-detail-actions">
+      <button onclick="addToFridge()">🧊 В холодильник</button>
+      <button onclick="linkTopicToHw()">📝 Связать с ДЗ</button>
+    </div>
+  </div>
+  <div class="topic-section"><div class="topic-section-title"><span class="num">📖</span> Теория</div><div class="topic-theory" id="topicTheory"></div></div>
+  <div class="topic-section" id="topicFormulasSection" style="display:none;"><div class="topic-section-title"><span class="num">ƒ</span> Формулы</div><div id="topicFormulas"></div></div>
+  <div class="topic-section" id="topicProblemsSection" style="display:none;"><div class="topic-section-title"><span class="num">✏️</span> Задачи</div><div class="topic-problems-grid" id="topicProblems"></div></div>
+</section>
+
+<section class="screen" id="hw">
+  <div class="section-title">📝 Домашка <span class="counter-badge" id="hwCounter">0</span></div>
+  <button class="btn mb-16" onclick="openHwModal()">+ Добавить ДЗ</button>
+  <div id="avgGradesBlock" style="display:none;margin-bottom:14px;"></div>
+  <div class="form-row mb-16">
+    <div class="form-group"><input type="text" id="hwSearch" placeholder="Поиск..." autocomplete="off"></div>
+    <div class="form-group"><select id="hwSort"><option value="date">По дате</option><option value="priority">По важности</option><option value="subject">По предмету</option></select></div>
+  </div>
+  <div id="hwBulkBar" class="bulk-bar hidden-bar">
+    <span id="hwSelectedCount" style="font-weight:800;">Выбрано: 0</span>
+    <button class="btn btn-sm btn-danger" onclick="bulkDeleteHw()">🗑 Удалить</button>
+    <button class="btn btn-sm btn-success" onclick="bulkDoneHw()">✓ Отметить</button>
+    <button class="btn btn-sm btn-outline" onclick="clearHwSelection()">Отмена</button>
+  </div>
+  <div id="hwList"></div>
+  <div id="hwEmpty" style="display:none;text-align:center;padding:40px;color:var(--text-dim);">📭 Пока пусто</div>
+</section>
+
+<section class="screen" id="schedule">
+  <div class="section-title">📅 Расписание</div>
+  <div class="schedule-day-tabs" id="scheduleDayTabs"></div>
+  <div class="day-controls">
+    <button onclick="copyDayPrompt()">📋 Копировать</button>
+    <button onclick="clearDayPrompt()">🗑 Очистить</button>
+  </div>
+  <div id="scheduleLoadBlock" style="margin-bottom:14px;"></div>
+  <div class="schedule-grid" id="scheduleGrid"></div>
+  <div class="after-school-block">
+    <div class="after-school-title">🌙 После уроков</div>
+    <div id="afterSchoolList"></div>
+    <button class="add-activity-btn" onclick="openActivityModal()">+ Добавить занятие</button>
+  </div>
+</section>
+
+<section class="screen" id="timer">
+  <div class="section-title">⏱️ Таймер</div>
+  <div class="timer-container">
+    <select class="timer-mode-select" id="timerMode" onchange="onTimerModeChange(this)"></select>
+    <div class="timer-circle-wrap">
+      <svg class="timer-svg" viewBox="0 0 240 240">
+        <defs><linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient></defs>
+        <circle class="timer-track" cx="120" cy="120" r="108"/>
+        <circle class="timer-progress" id="timerProgress" cx="120" cy="120" r="108" stroke-dasharray="678.58" stroke-dashoffset="0"/>
+      </svg>
+      <div class="timer-inner">
+        <div class="timer-phase" id="timerPhase">РАБОТА</div>
+        <div class="timer-time" id="timerDisplay">25:00</div>
+        <div class="timer-rounds" id="timerRounds">Сессия 1</div>
+      </div>
+    </div>
+    <div class="timer-controls">
+      <button class="btn-start" id="timerStartBtn" onclick="toggleTimer()">▶ Старт</button>
+      <button class="btn-reset" onclick="resetTimer()">↺ Сброс</button>
+      <button class="btn-break" onclick="skipToBreak()">⏭ Пропустить</button>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="checklist">
+  <div class="section-title">✅ Чек-лист <span class="counter-badge" id="taskCounter">0</span></div>
+  <div class="checklist-input-row">
+    <input type="text" id="taskInput" placeholder="Новая задача..." maxlength="100" onkeydown="if(event.key==='Enter'){event.preventDefault();addTask();}">
+    <button onclick="addTask()">+</button>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label>Дата</label><input type="date" id="taskDate"></div>
+    <div class="form-group"><label>Время</label><input type="time" id="taskTime"></div>
+  </div>
+  <div class="form-group">
+    <label>Повтор</label>
+    <select id="taskRepeat">
+      <option value="none">Без повтора</option>
+      <option value="5min">Каждые 5 минут</option>
+      <option value="1h">Каждый час</option>
+      <option value="24h">Каждые 24 часа</option>
+      <option value="day">Каждый день</option>
+      <option value="week">Каждую неделю</option>
+    </select>
+  </div>
+  <div class="filter-chips" id="taskFilters">
+    <button class="chip active" data-filter="active">Активные</button>
+    <button class="chip" data-filter="today">Сегодня</button>
+    <button class="chip" data-filter="tomorrow">Завтра</button>
+    <button class="chip" data-filter="overdue">Просрочено</button>
+    <button class="chip" data-filter="done">Выполнено</button>
+    <button class="chip" data-filter="all">Все</button>
+  </div>
+  <div id="taskBulkBar" class="bulk-bar hidden-bar">
+    <span id="taskSelectedCount" style="font-weight:800;">Выбрано: 0</span>
+    <button class="btn btn-sm btn-danger" onclick="bulkDeleteTask()">🗑 Удалить</button>
+    <button class="btn btn-sm btn-success" onclick="bulkDoneTask()">✓ Отметить</button>
+    <button class="btn btn-sm btn-outline" onclick="clearTaskSelection()">Отмена</button>
+  </div>
+  <div id="taskList"></div>
+  <div id="taskEmpty" style="display:none;text-align:center;padding:40px;color:var(--text-dim);">📋 Задач пока нет</div>
+</section>
+
+<section class="screen" id="reminders">
+  <div class="section-title">🔔 Напоминания <span style="font-size:0.7rem;color:var(--premium-gold);">💎</span></div>
+  <div id="remindersContent"></div>
+</section>
+
+<section class="screen" id="stats">
+  <div class="section-title">📊 Статистика</div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-value" id="statsTotalHw">0</div><div class="stat-label">📚 Всего ДЗ</div></div>
+    <div class="stat-card"><div class="stat-value" id="statsDoneHw">0</div><div class="stat-label">✅ Выполнено</div></div>
+    <div class="stat-card"><div class="stat-value" id="statsPendingHw">0</div><div class="stat-label">⏳ В работе</div></div>
+    <div class="stat-card"><div class="stat-value" id="statsPercent">0%</div><div class="stat-label">🎯 Прогресс</div></div>
+  </div>
+  <div id="statsPremiumContent"></div>
+</section>
+
+<section class="screen" id="motivation">
+  <div class="section-title">💭 Мотивация</div>
+  <div class="card card-accent" style="margin-bottom:14px;">
+    <div style="font-size:0.72rem;font-weight:800;color:var(--accent);text-transform:uppercase;margin-bottom:10px;">Цитата дня</div>
+    <div style="font-size:1.05rem;line-height:1.6;font-style:italic;margin-bottom:10px;" id="dailyQuoteText">«Учись так, как будто тебе предстоит жить вечно»</div>
+    <div style="font-size:0.85rem;color:var(--text-secondary);font-weight:600;margin-bottom:14px;" id="dailyQuoteAuthor">— Конфуций</div>
+    <div class="btn-group">
+      <button class="btn btn-outline btn-sm" onclick="newRandomQuote()">🔄 Другая</button>
+      <button class="btn btn-sm" onclick="saveQuoteToFavorites()">⭐ В избранное</button>
+    </div>
+    <div style="margin-top:10px;"><button class="btn btn-gold btn-sm" onclick="moreMotivation()" style="width:100%;">💎 Ещё мотивация</button></div>
+    <div style="margin-top:10px;"><button class="btn btn-sm" onclick="openBreath()" style="width:100%;background:var(--grad-purple);">🧘 Дыхание 4-7-8</button></div>
+  </div>
+  <div class="section-title" style="font-size:0.95rem;">⭐ Избранное</div>
+  <div id="favoriteQuotes"></div>
+</section>
+
+<section class="screen" id="nomi">
+  <div class="section-title">🧊 Холодильник (SRS)</div>
+  <div id="fridgeList"></div>
+</section>
+
+<section class="screen" id="shop">
+  <div class="section-title">🛒 Магазин</div>
+  <div class="shop-balance"><span style="font-size:1.4rem;">💰</span><span id="shopBalance">0</span><span style="opacity:0.7;font-size:0.75rem;margin-left:auto;">XP</span></div>
+  <div class="premium-banner" id="shopPremiumBanner" onclick="openPremiumModal()">
+    <div style="font-size:1.5rem;">💎</div>
+    <div style="flex:1;"><strong style="color:var(--premium-gold);display:block;">Оформи Premium</strong><span style="font-size:0.75rem;color:var(--text-secondary);">Скидка −30% на всё</span></div>
+  </div>
+  <div id="shopPremiumActive" style="display:none;padding:12px 16px;background:var(--premium-bg);border:1.5px solid var(--premium-gold);border-radius:var(--radius);margin-bottom:14px;font-weight:700;color:var(--premium-gold);font-size:0.88rem;">💎 Premium активен · −30% на всё</div>
+  <div class="shop-tabs" id="shopTabs">
+    <button class="shop-tab active" data-tab="themes">🎨 Темы</button>
+    <button class="shop-tab" data-tab="look">😈 Внешность</button>
+    <button class="shop-tab" data-tab="avatar-colors">🎭 Цвета</button>
+    <button class="shop-tab" data-tab="hats">🎩 Шляпки</button>
+    <button class="shop-tab" data-tab="backgrounds">🖼 Фоны</button>
+  </div>
+  <div class="shop-panel active" id="shop-panel-themes">
+    <div class="shop-grid" id="shopThemesBaseGrid"></div>
+    <div style="font-size:0.78rem;color:var(--text-secondary);margin:14px 0 10px;">Дополнительные цвета</div>
+    <div class="shop-grid" id="shopThemesGrid"></div>
+  </div>
+  <div class="shop-panel" id="shop-panel-look">
+    <div class="nomi-profile-card">
+      <div class="nomi-profile-avatar">
+        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" id="nomiProfileSvg" class="main-svg">
+          <defs><linearGradient id="nomiProfGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient></defs>
+          <g id="nomiProfHornsGroup"></g>
+          <ellipse cx="30" cy="32" rx="22" ry="20" fill="url(#nomiProfGrad)"/>
+          <ellipse id="nomiProfEyeL" cx="22" cy="28" rx="4.5" ry="5" fill="#fff"/>
+          <ellipse id="nomiProfEyeR" cx="38" cy="28" rx="4.5" ry="5" fill="#fff"/>
+          <g id="nomiProfPupilsGroup"></g>
+          <g id="nomiProfNoseGroup"></g>
+          <path id="nomiProfMouth" d="M 23 42 Q 30 47 37 42" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        </svg>
+        <span class="avatar-crown" id="avatarCrownShop">👑</span>
+        <span class="avatar-hat-svg" id="profileHatSvg"></span>
+      </div>
+      <div class="nomi-profile-name" id="nomiProfileName">Номи</div>
+    </div>
+    <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px;" id="nomiLookTabs">
+      <button class="nomi-tab active" data-tab="horns" style="flex-shrink:0;padding:9px 16px;border-radius:12px;background:var(--grad-purple);color:#fff;border:none;font-size:0.8rem;font-weight:700;cursor:pointer;">😈 Рожки</button>
+      <button class="nomi-tab" data-tab="eyes" style="flex-shrink:0;padding:9px 16px;border-radius:12px;background:var(--card-bg-2);color:var(--text-secondary);border:1.5px solid var(--border);font-size:0.8rem;font-weight:700;cursor:pointer;">👁️ Глазки</button>
+      <button class="nomi-tab" data-tab="noses" style="flex-shrink:0;padding:9px 16px;border-radius:12px;background:var(--card-bg-2);color:var(--text-secondary);border:1.5px solid var(--border);font-size:0.8rem;font-weight:700;cursor:pointer;">👃 Носики</button>
+      <button class="nomi-tab" data-tab="mouths" style="flex-shrink:0;padding:9px 16px;border-radius:12px;background:var(--card-bg-2);color:var(--text-secondary);border:1.5px solid var(--border);font-size:0.8rem;font-weight:700;cursor:pointer;">😊 Улыбочки</button>
+    </div>
+    <div id="look-panel-horns"><div class="look-grid" id="lookGrid-horns"></div></div>
+    <div id="look-panel-eyes" style="display:none;"><div class="look-grid" id="lookGrid-eyes"></div></div>
+    <div id="look-panel-noses" style="display:none;"><div class="look-grid" id="lookGrid-noses"></div></div>
+    <div id="look-panel-mouths" style="display:none;"><div class="look-grid" id="lookGrid-mouths"></div></div>
+  </div>
+  <div class="shop-panel" id="shop-panel-avatar-colors"><div class="shop-grid" id="shopAvatarColorsGrid"></div></div>
+  <div class="shop-panel" id="shop-panel-hats"><div class="shop-grid" id="shopHatsGrid"></div></div>
+  <div class="shop-panel" id="shop-panel-backgrounds"><div class="shop-grid" id="shopBackgroundsGrid"></div></div>
+</section>
+
+<section class="screen" id="pet">
+  <div class="section-title">🐣 Твой Номи</div>
+  <div class="pet-container">
+    <div class="pet-avatar">
+      <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" id="petAvatarSvg">
+        <defs><linearGradient id="petGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient></defs>
+        <g id="petHornsGroup"></g>
+        <ellipse cx="30" cy="32" rx="22" ry="20" fill="url(#petGrad)"/>
+        <ellipse id="petEyeL" cx="22" cy="28" rx="4.5" ry="5" fill="#fff"/>
+        <ellipse id="petEyeR" cx="38" cy="28" rx="4.5" ry="5" fill="#fff"/>
+        <g id="petPupilsGroup"></g>
+        <g id="petNoseGroup"></g>
+        <path id="petMouth" d="M 23 42 Q 30 47 37 42" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span class="avatar-crown" id="petCrown">👑</span>
+      <span class="avatar-hat-svg" id="petHatSvg"></span>
+    </div>
+    <div class="pet-name">Номи</div>
+    <div class="pet-level">⭐ Уровень <span id="petLevel">1</span></div>
+    <div class="pet-status" id="petStatusText">Сытый и довольный! 🎉</div>
+    <div class="pet-hunger-bar">
+      <div class="pet-hunger-label"><span>🍎 Сытость</span><span id="petHungerValue">100%</span></div>
+      <div class="pet-hunger-track"><div class="pet-hunger-fill" id="petHungerFill" style="width:100%"></div></div>
+    </div>
+    <div class="pet-xp-bar">
+      <div class="pet-hunger-label"><span>⭐ Опыт</span><span id="petXpValue">0 / 100</span></div>
+      <div class="pet-hunger-track"><div class="pet-hunger-fill" id="petXpFill" style="width:0%"></div></div>
+    </div>
+    <div class="pet-actions">
+      <button class="pet-action-btn" onclick="feedPet()"><span class="emoji">🍎</span><span>Покормить</span></button>
+      <button class="pet-action-btn" onclick="playWithPet()"><span class="emoji">🎾</span><span>Поиграть</span></button>
+      <button class="pet-action-btn" onclick="petPet()"><span class="emoji">🤗</span><span>Погладить</span></button>
+    </div>
+    <div class="section-subtitle" style="margin-top:20px;">🎨 Скины питомца</div>
+    <div class="pet-skins" id="petSkinsGrid"></div>
+  </div>
+</section>
+
+<section class="screen" id="flash">
+  <div class="section-title">🎴 Флеш-карточки <span class="counter-badge" id="flashCountBadge">0</span></div>
+  <div class="flash-deck-selector" id="flashDeckSelector"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <div style="font-size:0.82rem;color:var(--text-secondary);">Карточек: <span id="flashTotalCount" style="color:var(--purple);font-weight:800;">0</span></div>
+    <button class="btn btn-outline btn-xs" onclick="openFlashCardModal()">+ Создать</button>
+  </div>
+  <div id="flashActive" style="display:none;">
+    <div class="flash-card-container">
+      <div class="flash-card" id="flashCard" onclick="this.classList.toggle('flipped')">
+        <div class="flash-side front"><div class="flash-question" id="flashQuestionText">—</div></div>
+        <div class="flash-side back"><div class="flash-answer" id="flashAnswerText">—</div></div>
+      </div>
+    </div>
+    <div class="flash-answer-input">
+      <input type="text" id="flashUserAnswer" placeholder="Напиши ответ..." onkeydown="if(event.key==='Enter'){event.preventDefault();checkFlashAnswer();}">
+      <button onclick="checkFlashAnswer()">Проверить</button>
+    </div>
+    <div id="flashResult"></div>
+  </div>
+  <div id="flashEmpty" style="text-align:center;padding:40px;color:var(--text-dim);">🎴 Карточек пока нет</div>
+</section>
+
+<section class="screen" id="quests">
+  <div class="section-title">🗺 Квесты</div>
+  <div id="questsList"></div>
+  <div class="section-title" style="margin-top:20px;font-size:0.95rem;">💀 Боссы</div>
+  <div id="bossesList"></div>
+  <div class="section-title" style="margin-top:20px;font-size:0.95rem;">🌳 Дерево навыков (💎)</div>
+  <div id="skillTreeBox"></div>
+</section>
+
+<section class="screen" id="profile">
+  <div class="section-title">👤 Профиль</div>
+  <div class="nomi-profile-card" style="cursor:pointer;" onclick="showScreen('shop'); setTimeout(()=>{document.querySelector('#shopTabs [data-tab=look]').click();}, 200);">
+    <div class="nomi-profile-avatar">
+      <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" id="nomiProfileSvgMain" class="main-svg">
+        <defs><linearGradient id="nomiProfGradMain" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8B5CF6"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient></defs>
+        <g id="nomiProfMainHornsGroup"></g>
+        <ellipse cx="30" cy="32" rx="22" ry="20" fill="url(#nomiProfGradMain)"/>
+        <ellipse id="nomiProfMainEyeL" cx="22" cy="28" rx="4.5" ry="5" fill="#fff"/>
+        <ellipse id="nomiProfMainEyeR" cx="38" cy="28" rx="4.5" ry="5" fill="#fff"/>
+        <g id="nomiProfMainPupilsGroup"></g>
+        <g id="nomiProfMainNoseGroup"></g>
+        <path id="nomiProfMainMouth" d="M 23 42 Q 30 47 37 42" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span class="avatar-crown" id="avatarCrownProfileMain">👑</span>
+      <span class="avatar-hat-svg" id="mainHatSvg"></span>
+    </div>
+    <div class="nomi-profile-name" id="nomiProfileNameMain">Номи</div>
+    <div class="nomi-profile-level">Уровень <span id="nomiProfileLevelMain">1</span> · Милый демонёнок</div>
+    <div class="nomi-profile-xp"><div class="nomi-profile-xp-fill" id="nomiProfileXpFillMain" style="width:0%"></div></div>
+    <div class="nomi-profile-xp-text" id="nomiProfileXpTextMain">0 / 100 XP</div>
+  </div>
+  <div class="settings-group">
+    <div class="setting-row"><span class="setting-label">Имя</span><span class="setting-value" id="profileNameValue">—</span><button class="icon-btn icon-btn-sm" onclick="editName()">✏️</button></div>
+    <div class="setting-row"><span class="setting-label">Класс</span><select id="profileClass" style="width:auto;padding:6px 30px 6px 10px;font-size:0.85rem;"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option></select></div>
+    <div class="setting-row"><span class="setting-label">⭐ XP</span><span class="setting-value" id="profileXpValue">0</span></div>
+    <div class="setting-row"><span class="setting-label">🔥 Streak</span><span class="setting-value" id="profileStreakValue">0</span></div>
+    <div class="setting-row"><span class="setting-label">🏷️ Титул</span><span class="setting-value" id="profileTitleValue">—</span></div>
+  </div>
+  <div id="profilePremiumBlock" style="background:linear-gradient(135deg,rgba(251,191,36,0.12),rgba(251,146,60,0.06));border:1.5px solid var(--premium-gold);border-radius:var(--radius);padding:18px;margin-bottom:12px;text-align:center;">
+    <h3 style="color:var(--premium-gold);margin-bottom:6px;">💎 Premium</h3>
+    <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:12px;">Умный Номи, безлимит, все достижения, −30%</p>
+    <button class="btn btn-gold btn-sm" onclick="openPremiumModal()">299 ₽ / мес</button>
+    <button class="btn btn-outline btn-sm mt-8" onclick="openPremiumLifetime()">💎 3000 ₽ навсегда</button>
+  </div>
+  <div id="profileMemeAchievements"></div>
+</section>
+
+<section class="screen" id="settings">
+  <div class="section-title">⚙️ Настройки</div>
+  <div class="settings-group">
+    <div class="setting-row"><span class="setting-label">📚 Начало учёбы</span><span class="setting-value" id="schoolStartDisplay">—</span></div>
+    <div class="setting-row"><span class="setting-label">📚 Конец учёбы</span><span class="setting-value" id="schoolEndDisplay">—</span></div>
+    <div class="setting-row"><span class="setting-label">🏖️ Начало каникул</span><span class="setting-value" id="vacationStartDisplay">—</span></div>
+    <div class="setting-row"><span class="setting-label">🏁 Конец каникул</span><span class="setting-value" id="vacationEndDisplay">—</span></div>
+    <div class="setting-row clickable" onclick="quickEditStudy()"><span class="setting-label">✏️ Изменить даты</span><span class="setting-value">→</span></div>
+  </div>
+  <div class="settings-group">
+    <div class="setting-row" style="flex-direction:column;align-items:flex-start;">
+      <span class="setting-label">🎨 Свой цвет темы</span>
+      <div class="color-grid" id="customColorGrid"></div>
+    </div>
+  </div>
+  <div class="settings-group">
+    <div class="setting-row"><span class="setting-label">Шрифт</span><div style="display:flex;gap:6px;">
+      <button class="btn btn-outline btn-xs" onclick="setFontSize('small')">A−</button>
+      <button class="btn btn-outline btn-xs" onclick="setFontSize('medium')">A</button>
+      <button class="btn btn-outline btn-xs" onclick="setFontSize('large')">A+</button>
+    </div></div>
+    <div class="setting-row"><span class="setting-label">🌙 Тёмная тема</span><label class="switch"><input type="checkbox" id="toggleDarkTheme" checked><span class="slider"></span></label></div>
+    <div class="setting-row"><span class="setting-label">🔔 Уведомления</span><label class="switch"><input type="checkbox" id="toggleNotifications" checked><span class="slider"></span></label></div>
+    <div class="setting-row"><span class="setting-label">🔊 Звуки</span><label class="switch"><input type="checkbox" id="toggleSounds" checked><span class="slider"></span></label></div>
+    <div class="setting-row"><span class="setting-label">📳 Вибрация</span><label class="switch"><input type="checkbox" id="toggleVibration" checked><span class="slider"></span></label></div>
+    <div class="setting-row clickable" onclick="requestNotificationPermission()"><span class="setting-label">📲 Push-уведомления</span><span class="setting-value" id="pushStatus">Нажми</span></div>
+  </div>
+  <div class="settings-group">
+    <div class="setting-row" style="flex-direction:column;align-items:flex-start;">
+      <span class="setting-label">🏷️ Титулы</span>
+      <select id="titleSelect" style="width:100%;margin-top:8px;padding:10px;font-size:0.85rem;"></select>
+      <div style="font-size:0.75rem;color:var(--text-dim);margin-top:6px;">Открыто: <span id="titlesCount">0</span> из <span id="titlesTotal">0</span></div>
+      <button class="btn btn-outline btn-sm mt-8" onclick="showTitlesHelp()" style="width:100%;">❓ Как получить титулы</button>
+    </div>
+  </div>
+  <div class="settings-group">
+    <div class="setting-row clickable danger" onclick="confirmClearData()"><span>🗑</span><span class="setting-label">Удалить все данные</span></div>
+  </div>
+</section>
+</main>
+
+<div class="modal-overlay" id="hwModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('hwModal')">✕</button>
+    <div class="modal-title">📝 Добавить ДЗ</div>
+    <div class="form-group"><label>Предмет</label><select id="hwSubject"></select></div>
+    <div class="form-group"><label>Описание</label><textarea id="hwDesc" maxlength="300"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Дата</label><input type="date" id="hwDate"></div>
+      <div class="form-group"><label>Оценка</label><select id="hwGrade"><option value="">—</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
+    </div>
+    <div class="form-group"><label>Приоритет</label><div style="display:flex;gap:8px;" id="hwPriority">
+      <button class="btn btn-outline btn-sm" data-p="high" onclick="setHwPriority('high')">🔴</button>
+      <button class="btn btn-outline btn-sm" data-p="medium" onclick="setHwPriority('medium')">🟡</button>
+      <button class="btn btn-outline btn-sm" data-p="low" onclick="setHwPriority('low')">🟢</button>
+    </div></div>
+    <button class="btn mt-16" onclick="saveHw()">💾 Сохранить</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="lessonModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('lessonModal')">✕</button>
+    <div class="modal-title">📅 Урок</div>
+    <input type="hidden" id="lessonIndex"><input type="hidden" id="lessonDay">
+    <div class="form-group"><label>Предмет</label><select id="lessonSubjectSelect"></select></div>
+    <div class="form-row">
+      <div class="form-group"><label>Начало</label><input type="time" id="lessonStart"></div>
+      <div class="form-group"><label>Конец</label><input type="time" id="lessonEnd"></div>
+    </div>
+    <div class="form-group"><label>Кабинет</label><input type="text" id="lessonRoom" maxlength="20"></div>
+    <div class="btn-group mt-16">
+      <button class="btn btn-danger" onclick="deleteLesson()" id="lessonDeleteBtn" style="display:none;">🗑</button>
+      <button class="btn" onclick="saveLesson()">💾</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="activityModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('activityModal')">✕</button>
+    <div class="modal-title">🌙 Занятие</div>
+    <div class="form-group"><label>Название</label><input type="text" id="activityName" maxlength="50"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Начало</label><input type="time" id="activityStart"></div>
+      <div class="form-group"><label>Конец</label><input type="time" id="activityEnd"></div>
+    </div>
+    <button class="btn mt-16" onclick="saveActivity()">💾</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="reminderModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('reminderModal')">✕</button>
+    <div class="modal-title">🔔 Напоминание</div>
+    <div class="form-group"><label>Текст</label><input type="text" id="reminderText" maxlength="100"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Дата</label><input type="date" id="reminderDate"></div>
+      <div class="form-group"><label>Время</label><input type="time" id="reminderTime" value="09:00"></div>
+    </div>
+    <div class="form-group"><label>Повтор</label><select id="reminderRepeat"><option value="none">Один раз</option><option value="daily">Каждый день</option></select></div>
+    <button class="btn mt-16" onclick="saveReminder()">💾</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="flashCardModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('flashCardModal')">✕</button>
+    <div class="modal-title">🎴 Новая карточка</div>
+    <div class="form-group"><label>Вопрос</label><textarea id="flashCardQuestion" maxlength="200"></textarea></div>
+    <div class="form-group"><label>Ответ</label><textarea id="flashCardAnswer" maxlength="300"></textarea></div>
+    <div class="form-group"><label>Колода</label><input type="text" id="flashCardDeck" value="Общее" maxlength="30"></div>
+    <button class="btn mt-16" onclick="saveFlashCard()">💾</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="quickDatesModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('quickDatesModal')">✕</button>
+    <div class="modal-title">📅 Быстрая настройка</div>
+    <div class="section-subtitle" style="margin-top:0;">📚 Учебный период</div>
+    <div class="form-row">
+      <div class="form-group"><label>Начало учёбы</label><input type="date" id="quickSchoolStart"></div>
+      <div class="form-group"><label>Конец учёбы</label><input type="date" id="quickSchoolEnd"></div>
+    </div>
+    <div class="section-subtitle">🏖️ Каникулы</div>
+    <div class="form-row">
+      <div class="form-group"><label>Начало каникул</label><input type="date" id="quickVacationStart"></div>
+      <div class="form-group"><label>Конец каникул</label><input type="date" id="quickVacationEnd"></div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+      <button class="chip" onclick="quickVacation(7)">7 дней</button>
+      <button class="chip" onclick="quickVacation(14)">2 недели</button>
+      <button class="chip" onclick="quickVacation(30)">Месяц</button>
+      <button class="chip" onclick="quickVacation(90)">Лето (3 мес)</button>
+    </div>
+    <button class="btn mt-16" onclick="saveQuickDates()">💾 Сохранить</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="levelInfoModal">
+  <div class="modal" style="max-width:480px;">
+    <button class="modal-close" onclick="closeModal('levelInfoModal')">✕</button>
+    <div class="modal-title">🎖️ Информация</div>
+    <div id="levelInfoContent"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="premiumModal">
+  <div class="modal premium-modal">
+    <button class="modal-close" onclick="closeModal('premiumModal')">✕</button>
+    <div class="premium-header"><div class="premium-crown">💎</div><h2>Premium</h2><p>Открой всю мощь Номи</p></div>
+    <div class="plan-price"><span class="price-new">299 ₽</span><span style="color:var(--text-secondary);font-size:0.85rem;">/ мес</span></div>
+    <ul class="plan-features">
+      <li>Умный Номи (14+ ответов)</li>
+      <li>Все темы без ограничений</li>
+      <li>Безлимит карточек</li>
+      <li>SRS-холодильник ∞</li>
+      <li>Средний балл</li>
+      <li>Дерево навыков</li>
+      <li>Напоминания и Push</li>
+      <li>Ежедневные задания + сундук</li>
+      <li>Все товары бесплатно</li>
+      <li>Скидка −30%</li>
+      <li>Premium-частицы и корона</li>
+    </ul>
+    <button class="btn btn-gold" onclick="selectPlan()">Оформить за 299 ₽/мес</button>
+    <button class="btn btn-outline mt-8" onclick="openPremiumLifetime()">💎 3000 ₽ навсегда</button>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button class="btn btn-outline btn-sm" onclick="activatePromo()">🎁 Промокод</button>
+    </div>
+    <div class="premium-demo-note">💡 Промокоды: <b>VIP2025</b> · <b>NOMI2024</b></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="paymentModal">
+  <div class="modal premium-modal">
+    <button class="modal-close" onclick="closeModal('paymentModal')">✕</button>
+    <div id="paymentForm">
+      <div class="modal-title">💳 Оплата</div>
+      <div class="payment-demo-banner">Демо-режим</div>
+      <div class="payment-methods">
+        <label class="payment-method active"><input type="radio" checked>💳 Карта</label>
+        <label class="payment-method"><input type="radio">🏦 СБП</label>
+      </div>
+      <div class="payment-field"><label>Номер карты</label><input type="text" placeholder="0000 0000 0000 0000" maxlength="19"></div>
+      <div class="payment-row">
+        <div class="payment-field"><label>Срок</label><input type="text" placeholder="MM/YY" maxlength="5"></div>
+        <div class="payment-field"><label>CVC</label><input type="text" placeholder="123" maxlength="3"></div>
+      </div>
+      <div class="payment-summary">
+        <div class="payment-row-line"><span>Тариф</span><span id="payPlanName">Premium · месяц</span></div>
+        <div class="payment-row-line payment-total"><span>Итого</span><span id="payTotal">299 ₽</span></div>
+      </div>
+      <button class="btn btn-gold" onclick="confirmPurchase()">Оплатить</button>
+    </div>
+    <div id="paymentProcessing" style="display:none;"><div class="payment-processing"><div class="payment-spinner"></div><div>Обработка...</div></div></div>
+    <div id="paymentSuccess" style="display:none;">
+      <div class="payment-success">
+        <div class="success-icon">🎉</div>
+        <div style="font-size:1.4rem;font-weight:800;background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent;">Premium активирован!</div>
+        <button class="btn btn-gold mt-16" onclick="closeModal('paymentModal')">Начать</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="breathModal">
+  <div class="modal" style="max-width:400px;">
+    <button class="modal-close" onclick="closeBreath()">✕</button>
+    <div class="modal-title" style="text-align:center;">🧘 Дыхание 4-7-8</div>
+    <div class="breath-circle" id="breathCircle"><div class="breath-text" id="breathText">4</div></div>
+    <div class="breath-phase" id="breathPhase">Вдох (4 сек)</div>
+    <div style="text-align:center;margin-top:20px;font-size:0.85rem;color:var(--text-secondary);">Дыши спокойно. Повторяй 4 цикла.</div>
+    <button class="btn mt-16" onclick="closeBreath()">Завершить</button>
+  </div>
+</div>
+    <script type="module" src="app.js"></script>
+</body>
+</html>

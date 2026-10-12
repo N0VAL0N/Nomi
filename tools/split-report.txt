@@ -1,0 +1,48 @@
+Всего тем: 630
+Файлов создано: 44
+
+=== ФАЙЛЫ ===
+  topics/1-4/russian.js — 28 тем
+  topics/1-4/literature.js — 35 тем
+  topics/1-4/math.js — 21 тем
+  topics/1-4/world.js — 32 тем
+  topics/1-4/english.js — 21 тем
+  topics/1-4/art.js — 26 тем
+  topics/1-4/music.js — 31 тем
+  topics/5-6/russian.js — 13 тем
+  topics/5-6/literature.js — 19 тем
+  topics/5-6/math.js — 15 тем
+  topics/5-6/history.js — 8 тем
+  topics/5-6/biology.js — 13 тем
+  topics/5-6/geography.js — 13 тем
+  topics/5-6/social.js — 13 тем
+  topics/5-6/informatics.js — 14 тем
+  topics/5-6/music.js — 14 тем
+  topics/5-6/art.js — 12 тем
+  topics/5-6/english.js — 14 тем
+  topics/7-9/russian.js — 18 тем
+  topics/7-9/literature.js — 24 тем
+  topics/7-9/algebra.js — 19 тем
+  topics/7-9/geometry.js — 19 тем
+  topics/7-9/history.js — 12 тем
+  topics/7-9/social.js — 7 тем
+  topics/7-9/geography.js — 16 тем
+  topics/7-9/biology.js — 22 тем
+  topics/7-9/physics.js — 14 тем
+  topics/7-9/informatics.js — 9 тем
+  topics/7-9/english.js — 9 тем
+  topics/7-9/chemistry.js — 13 тем
+  topics/7-9/obzh.js — 6 тем
+  topics/10-11/russian.js — 8 тем
+  topics/10-11/literature.js — 7 тем
+  topics/10-11/algebra.js — 8 тем
+  topics/10-11/geometry.js — 8 тем
+  topics/10-11/history.js — 10 тем
+  topics/10-11/social.js — 8 тем
+  topics/10-11/geography.js — 4 тем
+  topics/10-11/biology.js — 7 тем
+  topics/10-11/physics.js — 10 тем
+  topics/10-11/chemistry.js — 11 тем
+  topics/10-11/informatics.js — 8 тем
+  topics/10-11/english.js — 5 тем
+  topics/10-11/astronomy.js — 6 тем
